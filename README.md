@@ -1,34 +1,34 @@
-# AI Audio Processing Platform
+# AI 音频处理平台
 
-A high-performance audio/video processing system built with WebMan + ThinkPHP, designed for AI-powered audio extraction, noise reduction, speech recognition, and transcription.
+基于 WebMan + ThinkPHP 构建的高性能音视频处理系统，专为 AI 驱动的音频提取、降噪、语音识别和文字转录设计。
 
-## Features
+## 功能特性
 
-- **Multi-format Support**: Process both audio and video files
-- **Smart Queue System**: Priority-based processing with RabbitMQ
-- **Real-time Progress Tracking**: WebSocket-based live updates
-- **Scalable Architecture**: Domain-driven design with event sourcing
-- **Automatic Retry**: Failed tasks are automatically retried
-- **RESTful API**: Complete API for task management
+- **多格式支持**：处理音频和视频文件
+- **智能队列系统**：基于 RabbitMQ 的优先级处理
+- **实时进度跟踪**：基于 WebSocket 的实时更新
+- **可扩展架构**：采用领域驱动设计和事件溯源
+- **自动重试**：失败任务自动重试
+- **RESTful API**：完整的任务管理 API
 
-## Architecture
+## 架构设计
 
-The system follows Domain-Driven Design (DDD) principles:
+系统遵循领域驱动设计（DDD）原则：
 
 ```
 webman/
 ├── app/
-│   ├── domain/          # Domain entities and value objects
-│   ├── application/     # Application services and use cases
-│   ├── infrastructure/  # External service integrations
-│   ├── controller/      # HTTP/WebSocket controllers
-│   └── process/         # Background processes
-├── config/              # Configuration files
-├── database/            # Database migrations
-└── storage/             # File storage
+│   ├── domain/          # 领域实体和值对象
+│   ├── application/     # 应用服务和用例
+│   ├── infrastructure/  # 外部服务集成
+│   ├── controller/      # HTTP/WebSocket 控制器
+│   └── process/         # 后台进程
+├── config/              # 配置文件
+├── database/            # 数据库迁移
+└── storage/             # 文件存储
 ```
 
-## Requirements
+## 系统要求
 
 - PHP 8.2+
 - MySQL 5.7+
@@ -36,79 +36,79 @@ webman/
 - RabbitMQ 3.8+
 - Composer
 
-## Installation
+## 安装步骤
 
-1. Clone the repository:
+1. 克隆仓库：
 ```bash
 git clone <repository-url>
 cd <project-directory>
 ```
 
-2. Navigate to the WebMan directory:
+2. 进入 WebMan 目录：
 ```bash
 cd webman
 ```
 
-3. Install dependencies:
+3. 安装依赖：
 ```bash
 composer install
 ```
 
-4. Copy environment configuration:
+4. 复制环境配置：
 ```bash
 cp .env.example .env
 ```
 
-5. Configure your environment variables in `.env`
+5. 在 `.env` 中配置环境变量
 
-6. Run database migrations:
+6. 运行数据库迁移：
 ```bash
 php database/migrate.php
 ```
 
-7. Create storage directory:
+7. 创建存储目录：
 ```bash
 mkdir -p storage/uploads
 chmod 755 storage/uploads
 ```
 
-## Usage
+## 使用说明
 
-### Starting the Server
+### 启动服务器
 
 ```bash
 php start.php start
 ```
 
-For daemon mode:
+守护进程模式：
 ```bash
 php start.php start -d
 ```
 
-### API Endpoints
+### API 接口
 
-#### Create Task
+#### 创建任务
 ```bash
 POST /api/tasks
 Content-Type: multipart/form-data
 
-Parameters:
+参数：
 - process_type: audio_extract|denoise|fast_recognition|transcription|full_process
 - user_id: integer
-- files[]: audio/video files
+- files[]: 音频/视频文件
 ```
 
-#### Get Task Details
+#### 获取任务详情
 ```bash
 GET /api/tasks/{taskNumber}?user_id={userId}
 ```
 
-#### List User Tasks
+#### 获取用户任务列表
 ```bash
 GET /api/tasks?user_id={userId}&page={page}&page_size={pageSize}
 ```
 
-#### Cancel Task
+#### 取消任务
 ```bash
 POST /api/tasks/{taskNumber}/cancel
 Content-Type: application/json
@@ -118,7 +118,7 @@ Content-Type: application/json
 }
 ```
 
-#### Retry Failed Task
+#### 重试失败任务
 ```bash
 POST /api/tasks/{taskNumber}/retry
 Content-Type: application/json
@@ -128,124 +128,124 @@ Content-Type: application/json
 }
 ```
 
-#### Get Statistics
+#### 获取统计信息
 ```bash
 GET /api/tasks/statistics?user_id={userId}
 ```
 
-### WebSocket Progress Tracking
+### WebSocket 进度跟踪
 
-Connect to WebSocket endpoint:
+连接到 WebSocket 端点：
 ```
 ws://localhost:8787/ws
 ```
 
-Message format:
+消息格式：
 ```json
-// Subscribe to task progress
+// 订阅任务进度
 {
     "action": "subscribe",
     "task_id": 123
 }
 
-// Unsubscribe from task
+// 取消订阅
 {
     "action": "unsubscribe",
     "task_id": 123
 }
 
-// Get current progress
+// 获取当前进度
 {
     "action": "get_progress",
     "task_id": 123
 }
 ```
 
-## Process Types
+## 处理类型
 
-1. **audio_extract** (Priority: 8) - Extract audio from video files
-2. **denoise** (Priority: 6) - Remove background noise from audio
-3. **fast_recognition** (Priority: 4) - Quick speech recognition
-4. **transcription** (Priority: 2) - Full transcription with timestamps
-5. **full_process** (Priority: 2) - Complete workflow from extraction to transcription
+1. **audio_extract**（优先级：8）- 从视频文件提取音频
+2. **denoise**（优先级：6）- 去除音频背景噪音
+3. **fast_recognition**（优先级：4）- 快速语音识别
+4. **transcription**（优先级：2）- 带时间戳的完整转录
+5. **full_process**（优先级：2）- 从提取到转录的完整工作流
 
-## Queue System
+## 队列系统
 
-The system uses RabbitMQ with four main queues:
-- `audio_extract` - For audio extraction jobs
-- `denoise` - For noise reduction jobs
-- `fast_recognition` - For speech recognition jobs
-- `transcription` - For transcription jobs
+系统使用 RabbitMQ 的四个主要队列：
+- `audio_extract` - 音频提取任务
+- `denoise` - 降噪任务
+- `fast_recognition` - 语音识别任务
+- `transcription` - 文字转录任务
 
-Each queue has a corresponding dead letter queue for failed messages.
+每个队列都有对应的死信队列用于处理失败消息。
 
-## Background Processes
+## 后台进程
 
-### TaskScheduler
-- Checks pending tasks every 30 seconds
-- Retries failed tasks every 5 minutes
-- Automatically dispatches tasks to appropriate queues
+### 任务调度器
+- 每 30 秒检查待处理任务
+- 每 5 分钟重试失败任务
+- 自动将任务分发到相应队列
 
-## Database Schema
+## 数据库结构
 
 ### tasks
-- Main task information including status, progress, and metadata
+- 主要任务信息，包括状态、进度和元数据
 
 ### task_files
-- Individual file tracking within tasks
+- 任务内的单个文件跟踪
 
 ### processing_results
-- Stores processing outputs and results
+- 存储处理输出和结果
 
 ### domain_events
-- Event sourcing for audit trail and debugging
+- 事件溯源，用于审计和调试
 
-## Development
+## 开发
 
-### Running Tests
+### 运行测试
 ```bash
 ./vendor/bin/phpunit
 ```
 
-### Code Style
+### 代码规范
 ```bash
 ./vendor/bin/php-cs-fixer fix
 ```
 
-## Monitoring
+## 监控
 
-### Health Check
+### 健康检查
 ```bash
 GET /api/health
 ```
 
-### Logs
-- Application logs: `runtime/logs/`
-- Worker logs: Check console output or daemon logs
+### 日志
+- 应用日志：`runtime/logs/`
+- Worker 日志：查看控制台输出或守护进程日志
 
-## Troubleshooting
+## 故障排除
 
-### Common Issues
+### 常见问题
 
-1. **Database Connection Failed**
-   - Check MySQL is running
-   - Verify credentials in `.env`
-   - Ensure database exists
+1. **数据库连接失败**
+   - 检查 MySQL 是否运行
+   - 验证 `.env` 中的凭据
+   - 确保数据库存在
 
-2. **RabbitMQ Connection Failed**
-   - Check RabbitMQ is running
-   - Verify credentials and vhost
-   - Ensure user has proper permissions
+2. **RabbitMQ 连接失败**
+   - 检查 RabbitMQ 是否运行
+   - 验证凭据和虚拟主机
+   - 确保用户有适当权限
 
-3. **File Upload Failed**
-   - Check `storage/uploads` directory exists and is writable
-   - Verify file size limits in PHP configuration
-   - Ensure allowed file types match your requirements
+3. **文件上传失败**
+   - 检查 `storage/uploads` 目录是否存在且可写
+   - 验证 PHP 配置中的文件大小限制
+   - 确保允许的文件类型符合要求
 
-## License
+## 许可证
 
-This project is proprietary software. All rights reserved.
+本项目为专有软件。版权所有。
 
-## Support
+## 支持
 
-For issues and questions, please contact the development team.
+如有问题和疑问，请联系开发团队。
